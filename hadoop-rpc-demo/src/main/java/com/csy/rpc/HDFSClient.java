@@ -13,7 +13,7 @@ public class HDFSClient {
         RPCProtocol client = RPC.getProxy(
                 RPCProtocol.class,
                 RPCProtocol.versionID,
-                new InetSocketAddress("192.168.10.102", 8899),
+                new InetSocketAddress("localhost", 8888),
                 new Configuration()
         );
         System.out.println("client start");
