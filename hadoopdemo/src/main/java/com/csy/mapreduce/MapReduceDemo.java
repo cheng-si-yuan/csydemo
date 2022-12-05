@@ -9,14 +9,12 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.CombineTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 
 public class MapReduceDemo {
@@ -60,6 +58,7 @@ public class MapReduceDemo {
         System.out.println("====== output path: " + outputPath);
 
         Configuration conf = new Configuration();
+        conf.set("mapreduce.job.queuename", "hive"); // 设置提交队列为hive队列
         FileSystem fs = FileSystem.get(new URI("hdfs://hadoop102:8020"), conf, "csy");
         Job job = Job.getInstance(conf);
 
@@ -72,6 +71,11 @@ public class MapReduceDemo {
 
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
+
+        // 如果不设置 InputFormat，它默认用的是 TextInputFormat.class
+        job.setInputFormatClass(CombineTextInputFormat.class);
+        //虚拟存储切片最大值设置 4m
+        CombineTextInputFormat.setMaxInputSplitSize(job, 4194304);
 
         deletePathIfExists(fs, outputPath);
         FileInputFormat.setInputPaths(job, new Path(inputPath));
