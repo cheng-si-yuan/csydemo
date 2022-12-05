@@ -1,5 +1,6 @@
 package com.csy.mapreduce;
 
+import com.csy.tools.HDFSTool;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -58,7 +59,7 @@ public class MapReduceDemo {
         System.out.println("====== output path: " + outputPath);
 
         Configuration conf = new Configuration();
-        conf.set("mapreduce.job.queuename", "hive"); // 设置提交队列为hive队列
+//        conf.set("mapreduce.job.queuename", "hive"); // 设置提交队列为hive队列
         FileSystem fs = FileSystem.get(new URI("hdfs://hadoop102:8020"), conf, "csy");
         Job job = Job.getInstance(conf);
 
@@ -77,20 +78,12 @@ public class MapReduceDemo {
         //虚拟存储切片最大值设置 4m
         CombineTextInputFormat.setMaxInputSplitSize(job, 4194304);
 
-        deletePathIfExists(fs, outputPath);
+        HDFSTool.deletePathIfExists(fs, outputPath);
         FileInputFormat.setInputPaths(job, new Path(inputPath));
         FileOutputFormat.setOutputPath(job, new Path(outputPath));
 
         boolean result = job.waitForCompletion(true);
         fs.close();
         System.exit(result ? 0 : 1);
-    }
-
-    public static void deletePathIfExists(FileSystem fs, String pathStr) throws IOException {
-        Path path = new Path(pathStr);
-        if (fs.exists(path)) {
-            System.out.println("====== path delete: " + pathStr);
-            fs.delete(path, true);
-        }
     }
 }
