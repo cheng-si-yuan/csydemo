@@ -46,6 +46,7 @@ public class NNServer implements RPCProtocol {
             throw new NumberOfParamException(args, 2);
         }
         System.out.println("server init start");
+        System.out.printf("address:%s, port:%s%n", args[0], args[1]);
         RPC.Server server = new RPC.Builder(new Configuration())
                 .setBindAddress(args[0])
                 .setPort(Integer.parseInt(args[1]))
